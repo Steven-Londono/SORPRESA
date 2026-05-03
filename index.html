@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Sobres Sorpresa - Enfermería y Matemáticas 💜</title>
+<audio controls>
+    <source src="cancion.mp3" type="audio/mp3">
+</audio>
+
     <style>
+
         * {
             margin: 0;
             padding: 0;
@@ -16,46 +21,6 @@
             min-height: 100vh;
             font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
             overflow-x: hidden;
-        }
-
-        /* Reproductor de música flotante */
-        .music-player {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            z-index: 1000;
-            background: linear-gradient(135deg, #7e5db8, #5a3d8a);
-            border-radius: 60px;
-            padding: 0.8rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .music-player:hover {
-            transform: scale(1.05);
-            background: linear-gradient(135deg, #8a65c5, #6a4996);
-        }
-
-        .music-player .icon {
-            font-size: 2rem;
-            color: white;
-        }
-
-        .music-player .text {
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .music-player .status {
-            font-size: 0.7rem;
-            color: #e0d0ff;
         }
 
         .header {
@@ -124,6 +89,7 @@
             padding: 1.5rem;
         }
 
+        /* ========== FRONT ========== */
         .card-front {
             background-size: cover;
             background-position: center;
@@ -191,6 +157,7 @@
             color: white;
         }
 
+        /* ========== BACK ========== */
         .card-back {
             background-size: cover;
             background-position: center;
@@ -217,6 +184,7 @@
             z-index: 2;
         }
 
+        /* EL MENSAJE - CENTRADO PERFECTAMENTE */
         .mensaje {
             font-size: 1.3rem;
             font-weight: 700;
@@ -285,13 +253,25 @@
                 font-size: 1rem;
                 padding: 1rem;
             }
-            .music-player {
-                bottom: 15px;
-                right: 15px;
-                padding: 0.5rem 1rem;
+            .icons-front {
+                font-size: 1.3rem;
             }
-            .music-player .icon {
+            .decoracion {
+                font-size: 1.1rem;
+                gap: 10px;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .card {
+                max-width: 420px;
+                height: 500px;
+            }
+            .mensaje {
                 font-size: 1.5rem;
+            }
+            .card-front h3 {
+                font-size: 2rem;
             }
         }
     </style>
@@ -306,66 +286,7 @@
 
 <footer>🩺 Toca cada sobre → Mensaje especial 💌</footer>
 
-<!-- Reproductor de música flotante -->
-<div class="music-player" id="musicPlayer">
-    <span class="icon">🎵</span>
-    <div>
-        <div class="text">🎶 Canción especial 🎶</div>
-        <div class="status" id="musicStatus">🔇 Toca para activar</div>
-    </div>
-</div>
-
 <script>
-    // ============================================================
-    // 🎵 CONFIGURACIÓN DE LA MÚSICA - TU CANCIÓN DE DRIVE 🎵
-    // ============================================================
-    // ID de tu canción en Google Drive: 1_GRI9rPlYC-nKEgJ3Xbu1gnA8ukqHzZM
-    const URL_CANCION = "https://drive.google.com/uc?export=download&id=1_GRI9rPlYC-nKEgJ3Xbu1gnA8ukqHzZM";
-    // ============================================================
-    
-    let audio = null;
-    let musicaActiva = false;
-
-    function iniciarMusica() {
-        if (!audio) {
-            audio = new Audio(URL_CANCION);
-            audio.loop = true; // Repite la canción en bucle
-            audio.volume = 0.7; // Volumen al 70% (0.0 a 1.0)
-        }
-        
-        if (musicaActiva) {
-            audio.pause();
-            musicaActiva = false;
-            document.getElementById("musicStatus").innerHTML = "🔇 Música pausada";
-            document.querySelector(".music-player .icon").innerHTML = "🎵";
-        } else {
-            // Necesario para que funcione en navegadores modernos
-            audio.play().then(() => {
-                musicaActiva = true;
-                document.getElementById("musicStatus").innerHTML = "🎶 Sonando 💜";
-                document.querySelector(".music-player .icon").innerHTML = "🎵 🔊";
-            }).catch(error => {
-                console.log("Error al reproducir:", error);
-                document.getElementById("musicStatus").innerHTML = "⚠️ Toca aquí primero";
-                alert("💜 Para escuchar la canción, toca el botón de música. Los navegadores requieren tu interacción primero.");
-            });
-        }
-    }
-
-    // Evento para el botón de música
-    document.getElementById("musicPlayer").addEventListener("click", iniciarMusica);
-
-    // Mensaje amigable al cargar
-    setTimeout(() => {
-        if (!musicaActiva && audio === null) {
-            console.log("🎵 Para activar la música, toca el botón flotante morado");
-        }
-    }, 1000);
-
-    // ============================================================
-    // FUNCIONES DE LOS SOBRES
-    // ============================================================
-    
     function convertirDrive(url) {
         const match = url.match(/\/d\/(.*?)\//);
         if (!match) return url;
