@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Sobres Sorpresa - Enfermería y Matemáticas 💜</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f1e6ff 0%, #d8c8f0 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Reproductor de música flotante */
+        .music-player {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #7e5db8, #5a3d8a);
+            border-radius: 60px;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .music-player:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #8a65c5, #6a4996);
+        }
+
+        .music-player .icon {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .music-player .text {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .music-player .status {
+            font-size: 0.7rem;
+            color: #e0d0ff;
+        }
+
+        .header {
+            text-align: center;
+            padding: 1.5rem 1rem 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #5a3d8a;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            display: inline-block;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+        }
+
+        .gallery {
+            max-width: 1600px;
+            width: 95%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card {
+            background: transparent;
+            width: 100%;
+            max-width: 380px;
+            height: 460px;
+            margin: 0 auto;
+            perspective: 1500px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s ease-in-out;
+            transform-style: preserve-3d;
+            border-radius: 28px;
+            box-shadow: 0 25px 40px -15px rgba(0, 0, 0, 0.4);
+        }
+
+        .card.open .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .card-front {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transform: rotateY(0deg);
+            gap: 0.8rem;
+        }
+        
+        .card-front::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+            border-radius: 28px;
+            z-index: 1;
+        }
+        
+        .card-front > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-front h3 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            background: rgba(46, 27, 78, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            text-align: center;
+        }
+
+        .click-hint {
+            font-size: 0.85rem;
+            color: white;
+            background: rgba(88, 56, 148, 0.85);
+            backdrop-filter: blur(4px);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.9; }
+        }
+
+        .icons-front {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+
+        .icon-front {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            color: white;
+        }
+
+        .card-back {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transform: rotateY(180deg);
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .card-back::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,240,0.92), rgba(245,235,255,0.96));
+            border-radius: 28px;
+            z-index: 1;
+        }
+        
+        .card-back > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .mensaje {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #3d2a60;
+            background: rgba(255,255,255,0.95);
+            padding: 1.2rem;
+            border-radius: 45px;
+            text-align: center;
+            border: 2px solid #c2a8f0;
+            width: 100%;
+            line-height: 1.4;
+        }
+
+        .decoracion {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            font-size: 1.4rem;
+            background: rgba(200,170,240,0.85);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+        }
+
+        .btn-cerrar {
+            background: linear-gradient(135deg, #b28bdf, #9b6fd1);
+            border: none;
+            border-radius: 60px;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .btn-cerrar:hover {
+            transform: scale(1.08);
+        }
+
+        footer {
+            text-align: center;
+            width: fit-content;
+            margin: 2rem auto;
+            font-size: 0.85rem;
+            color: #5a4285;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.5rem;
+            border-radius: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+            .card {
+                max-width: 340px;
+                height: 430px;
+            }
+            .card-front h3 {
+                font-size: 1.4rem;
+            }
+            .mensaje {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+            .music-player {
+                bottom: 15px;
+                right: 15px;
+                padding: 0.5rem 1rem;
+            }
+            .music-player .icon {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>💜 ERES EL AMOR DE MI VIDA 💜</h1>
+</div>
+
+<div class="gallery" id="sobresGallery"></div>
+
+<footer>🩺 Toca cada sobre → Mensaje especial 💌</footer>
+
+<!-- Reproductor de música flotante -->
+<div class="music-player" id="musicPlayer">
+    <span class="icon">🎵</span>
+    <div>
+        <div class="text">🎶 Canción especial 🎶</div>
+        <div class="status" id="musicStatus">🔇 Toca para activar</div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // 🎵 CONFIGURACIÓN DE LA MÚSICA - TU CANCIÓN DE DRIVE 🎵
+    // ============================================================
+    // ID de tu canción en Google Drive: 1_GRI9rPlYC-nKEgJ3Xbu1gnA8ukqHzZM
+    const URL_CANCION = "https://drive.google.com/uc?export=download&id=1_GRI9rPlYC-nKEgJ3Xbu1gnA8ukqHzZM";
+    // ============================================================
+    
+    let audio = null;
+    let musicaActiva = false;
+
+    function iniciarMusica() {
+        if (!audio) {
+            audio = new Audio(URL_CANCION);
+            audio.loop = true; // Repite la canción en bucle
+            audio.volume = 0.7; // Volumen al 70% (0.0 a 1.0)
+        }
+        
+        if (musicaActiva) {
+            audio.pause();
+            musicaActiva = false;
+            document.getElementById("musicStatus").innerHTML = "🔇 Música pausada";
+            document.querySelector(".music-player .icon").innerHTML = "🎵";
+        } else {
+            // Necesario para que funcione en navegadores modernos
+            audio.play().then(() => {
+                musicaActiva = true;
+                document.getElementById("musicStatus").innerHTML = "🎶 Sonando 💜";
+                document.querySelector(".music-player .icon").innerHTML = "🎵 🔊";
+            }).catch(error => {
+                console.log("Error al reproducir:", error);
+                document.getElementById("musicStatus").innerHTML = "⚠️ Toca aquí primero";
+                alert("💜 Para escuchar la canción, toca el botón de música. Los navegadores requieren tu interacción primero.");
+            });
+        }
+    }
+
+    // Evento para el botón de música
+    document.getElementById("musicPlayer").addEventListener("click", iniciarMusica);
+
+    // Mensaje amigable al cargar
+    setTimeout(() => {
+        if (!musicaActiva && audio === null) {
+            console.log("🎵 Para activar la música, toca el botón flotante morado");
+        }
+    }, 1000);
+
+    // ============================================================
+    // FUNCIONES DE LOS SOBRES
+    // ============================================================
+    
+    function convertirDrive(url) {
+        const match = url.match(/\/d\/(.*?)\//);
+        if (!match) return url;
+        const id = match[1];
+        return `https://lh3.googleusercontent.com/d/${id}`;
+    }
+
+    const iconosMatematicos = ["∫", "√", "π", "∞", "∑", "∆", "θ", "λ", "≠", "≈", "∅", "∠", "⊥", "∂"];
+    const iconosEnfermeria = ["🩺", "💊", "🫀", "🧬", "🩸", "💉", "🧪", "🌡️", "❤️", "💓", "🫁", "🧠", "💪"];
+    const iconosExtras = ["✨", "🌟", "⭐", "💜", "💙", "💚", "🧡", "🌸", "🌺", "🌈"];
+
+    const sobresData = [
+        { title: "Para ti", message: "Es nuestra mirada la fuerza más linda de todas", url: convertirDrive("https://drive.google.com/file/d/1FwCjKkia2ctl6o4-77AvgH_qPVMRZc92/view") },
+        { title: "Sorpresa", message: "Me gusta todo lo que sos y un poco más", url: convertirDrive("https://drive.google.com/file/d/11vmek4SRlT-Uxihn-wdTOkHbYlnv0QCW/view") },
+        { title: "Te quiero", message: "Te quiero en cada momento de mi vida", url: convertirDrive("https://drive.google.com/file/d/1IylMeN60kUr6fPTe9njZscyMSQE9aAyw/view") },
+        { title: "Te amo", message: "Amo todo lo que eres", url: convertirDrive("https://drive.google.com/file/d/1MV_jXMYL8HnVH0mN1kONdMwmLqY7wJFx/view") },
+        { title: "Orgulloso de ti", message: "Eres tan fuerte como no te imaginas", url: convertirDrive("https://drive.google.com/file/d/1MEOYmnppfwKjo22sPxRmlhYmBQH5vmhe/view") },
+        { title: "Gracias", message: "Todo es más lindo si es contigo", url: convertirDrive("https://drive.google.com/file/d/1-h68mEoqyGG8bi2VhXCVE_GJKeLgJLVu/view") },
+        { title: "Para siempre", message: "Te quiero hoy, mañana y siempre", url: convertirDrive("https://drive.google.com/file/d/1WR_EoLXeSQTh9f0hmZ5c48Erl2HkrO99/view") },
+        { title: "Lo siento", message: "Estaré mejorando cada día", url: convertirDrive("https://drive.google.com/file/d/1MkcaKQWFUtvu6pRBPZziNPZdbCLEVPkz/view") },
+        { title: "No me sueltes", message: "Tomaré tu mano con mucho cuidado", url: convertirDrive("https://drive.google.com/file/d/1X6-sT_DhsimkV8-uPY_s29G31pZfK7l5/view") }
+    ];
+
+    function getIcons(index) {
+        const seed = index * 17;
+        return {
+            m1: iconosMatematicos[seed % iconosMatematicos.length],
+            m2: iconosMatematicos[(seed+2) % iconosMatematicos.length],
+            n1: iconosEnfermeria[(seed+1) % iconosEnfermeria.length],
+            n2: iconosEnfermeria[(seed+3) % iconosEnfermeria.length],
+            n3: iconosEnfermeria[(seed+5) % iconosEnfermeria.length],
+            e1: iconosExtras[(seed+4) % iconosExtras.length],
+            e2: iconosExtras[(seed+6) % iconosExtras.length]
+        };
+    }
+
+    function generarGaleria() {
+        const gallery = document.getElementById("sobresGallery");
+        gallery.innerHTML = "";
+
+        sobresData.forEach((item, idx) => {
+            const icons = getIcons(idx);
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-front" style="background-image: url('${item.url}');">
+                        <div class="icons-front">
+                            <span class="icon-front">${icons.m1}</span>
+                            <span class="icon-front">${icons.n1}</span>
+                            <span class="icon-front">${icons.e1}</span>
+                            <span class="icon-front">${icons.m2}</span>
+                            <span class="icon-front">${icons.n2}</span>
+                        </div>
+                        <h3>${escapeHtml(item.title)}</h3>
+                        <div class="icons-front">
+                            <span class="icon-front">${icons.n3}</span>
+                            <span class="icon-front">${icons.e2}</span>
+                        </div>
+                        <p class="click-hint">💜 Toca para abrir 💜</p>
+                    </div>
+                    <div class="card-back" style="background-image: url('${item.url}');">
+                        <div class="mensaje">✨ ${escapeHtml(item.message)} ✨</div>
+                        <div class="decoracion">
+                            <span>${icons.m1} ${icons.n1}</span>
+                            <span>∫ amor dx = ∞</span>
+                            <span>${icons.n2} ${icons.m2}</span>
+                        </div>
+                        <button class="btn-cerrar">✖️ Cerrar</button>
+                    </div>
+                </div>
+            `;
+
+            const btn = card.querySelector(".btn-cerrar");
+            card.addEventListener("click", (e) => {
+                if (e.target === btn || btn.contains(e.target)) return;
+                card.classList.toggle("open");
+            });
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                card.classList.remove("open");
+            });
+
+            gallery.appendChild(card);
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, (m) => m === "&" ? "&amp;" : m === "<" ? "&lt;" : "&gt;");
+    }
+
+    window.addEventListener("DOMContentLoaded", generarGaleria);
+</script>
+</body>
+</html>
